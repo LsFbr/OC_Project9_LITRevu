@@ -1,0 +1,25 @@
+[flake8]
+# Limite de caractères par ligne (88 est la limite moderne recommandée)
+max-line-length = 120
+
+# Ignorer les erreurs spécifiques si nécessaire
+# E203: whitespace before ':' (peut être en conflit avec Black)
+# W503: line break before binary operator (peut être en conflit avec Black)
+ignore = E203, W503
+
+# Exclure les dossiers et fichiers à ignorer
+exclude = 
+    .git,
+    __pycache__,
+    venv,
+    migrations,
+    *.pyc,
+    .venv,
+    env,
+    .env
+
+# Nombre maximum de caractères par ligne pour les docstrings
+max-doc-length = 120
+
+# Nombre maximum de caractères par ligne pour les commentaires
+max-complexity = 10 
