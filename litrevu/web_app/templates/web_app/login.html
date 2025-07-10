@@ -4,18 +4,16 @@
 {% block content %}
 <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        <!-- Colonne gauche : inscription -->
         <div class="text-center">
             <h2 class="text-xl font-semibold mb-6">Inscrivez-vous maintenant</h2>
-            <a href="#" class="inline-block border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
+            <a href="{% url 'register' %}" class="inline-block border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
                 S'inscrire
             </a>
         </div>
 
-        <!-- Colonne droite : connexion -->
         <div>
             <h2 class="text-xl font-semibold mb-6 text-center">Connectez-vous</h2>
-            <form method="post" aria-label="Formulaire de connexion">
+            <form method="post" aria-label="Formulaire de connexion" id="login-form">
                 <div class="mb-4">
                     <label for="username" class="sr-only">Nom d'utilisateur</label>
                     <input id="username" name="username" type="text" placeholder="Nom d'utilisateur" required
