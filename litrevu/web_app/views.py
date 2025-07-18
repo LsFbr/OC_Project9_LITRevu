@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from web_app.forms import LoginForm
 
@@ -21,7 +22,7 @@ def login_view(request):
             )
             if user is not None:
                 login(request, user)
-                message = f'Bonjour, {user.username}! Vous êtes connecté.'
+                return redirect("flux")
             else:
                 message = 'Identifiants invalides.'
     return render(request, "web_app/login.html", context={"form": form, "message": message})
@@ -29,3 +30,8 @@ def login_view(request):
 
 def register(request):
     return render(request, "web_app/register.html")
+
+
+@login_required
+def flux(request):
+    return render(request, "web_app/flux.html")
