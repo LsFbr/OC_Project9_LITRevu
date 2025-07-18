@@ -24,5 +24,5 @@ urlpatterns = [
     path("logout/", views.logout_user, name="logout"),
     path("", views.LoginView.as_view(), name="login"),
     path("register/", views.register, name="register"),
-    path("flux/", views.flux, name="flux"),
+    path("flux/", views.FluxView.as_view(), name="flux"),
 ]
