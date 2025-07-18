@@ -1,15 +1,15 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from web_app.forms import LoginForm
 
 
-def logout_user(request):
-    logout(request)
-    return redirect("login")
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("login")
 
 
 class LoginView(View):
@@ -37,8 +37,11 @@ class LoginView(View):
         return render(request, self.template_name, {"form": form, "message": message})
 
 
-def register(request):
-    return render(request, "web_app/register.html")
+class RegisterView(View):
+    template_name = "web_app/register.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 
 class FluxView(LoginRequiredMixin, View):
@@ -46,8 +49,3 @@ class FluxView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, self.template_name)
-
-
-@login_required
-def flux(request):
-    return render(request, "web_app/flux.html")
