@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.views.generic import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 from web_app.forms import LoginForm
 
 
@@ -38,6 +39,13 @@ class LoginView(View):
 
 def register(request):
     return render(request, "web_app/register.html")
+
+
+class FluxView(LoginRequiredMixin, View):
+    template_name = "web_app/flux.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
 
 
 @login_required
