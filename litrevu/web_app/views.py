@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.views.generic import View
 from web_app.forms import LoginForm
 
 
@@ -10,11 +11,18 @@ def logout_user(request):
     return redirect("login")
 
 
-def login_view(request):
-    form = LoginForm()
-    message = ""
-    if request.method == "POST":
-        form = LoginForm(request.POST)
+class LoginView(View):
+    template_name = "web_app/login.html"
+    form_class = LoginForm
+    success_url = "flux"
+
+    def get(self, request):
+        form = self.form_class()
+        message = ""
+        return render(request, self.template_name, {"form": form, "message": message})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data["username"],
@@ -22,10 +30,10 @@ def login_view(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect("flux")
+                return redirect('flux')
             else:
                 message = 'Identifiants invalides.'
-    return render(request, "web_app/login.html", context={"form": form, "message": message})
+        return render(request, self.template_name, {"form": form, "message": message})
 
 
 def register(request):
