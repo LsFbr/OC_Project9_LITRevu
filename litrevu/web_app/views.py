@@ -4,7 +4,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from web_app.forms import LoginForm, RegisterForm
+from web_app.forms import LoginForm, RegisterForm, TicketForm
+from web_app.models import Ticket
 
 
 class LogoutView(View):
@@ -51,9 +52,8 @@ class RegisterView(View):
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect(settings.LOGIN_REDIRECT_URL)
+            form.save()
+            return redirect("login")
         return render(request, self.template_name, {"form": form})
 
 
@@ -61,7 +61,8 @@ class FluxView(LoginRequiredMixin, View):
     template_name = "web_app/flux.html"
 
     def get(self, request):
-        return render(request, self.template_name)
+        tickets = Ticket.objects.all().order_by("-time_created")
+        return render(request, self.template_name, {"tickets": tickets})
 
 
 class PostsView(LoginRequiredMixin, View):
@@ -87,6 +88,24 @@ class SubscriptionsView(LoginRequiredMixin, View):
 
 class TicketView(LoginRequiredMixin, View):
     template_name = "web_app/ticket.html"
+    form_class = TicketForm
 
     def get(self, request):
-        return render(request, self.template_name)
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            ticket = Ticket(
+                title=form.cleaned_data["title"],
+                description=form.cleaned_data["description"],
+                image=form.cleaned_data["image"],
+                user=request.user
+            )
+            ticket.save()
+            return redirect("flux")
+        else:
+            message = "Erreur lors de la création du ticket"
+            print(form.errors)
+        return render(request, self.template_name, {"form": form, "message": message})
