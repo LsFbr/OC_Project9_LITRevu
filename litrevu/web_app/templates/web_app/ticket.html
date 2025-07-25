@@ -1,7 +1,30 @@
 {% extends 'web_app/base.html' %}
 {% block title %}Créez votre ticket - LITRevu{% endblock %}
 {% block content %}
-<div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-800">Créez votre ticket</h1>
+<div class="container max-w-2xl mx-auto px-4">
+    <h1 class="text-center text-2xl font-bold text-gray-800">Créer un ticket</h1>
+    <form enctype="multipart/form-data" method="post" aria-label="Formulaire de création de ticket" class="gap-4">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="{{ form.title.id_for_label }}" class="block text-gray-700">{{ form.title.label }}</label>
+            {{ form.title }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.description.id_for_label }}" class="block text-gray-700">{{ form.description.label }}</label>
+            {{ form.description }}
+        </div>
+        <div class="mb-4">
+            <label for="{{ form.image.id_for_label }}" class="block text-gray-700">{{ form.image.label }}</label>
+            {{ form.image }}
+        </div>
+        <div class="flex justify-end gap-4">
+            {% if message %}
+                <p class="text-red-500">{{ message }}</p>
+            {% endif %}
+            <button type="submit" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
+                Envoyer
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}
