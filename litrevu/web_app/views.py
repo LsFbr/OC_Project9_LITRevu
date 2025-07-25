@@ -62,3 +62,31 @@ class FluxView(LoginRequiredMixin, View):
 
     def get(self, request):
         return render(request, self.template_name)
+
+
+class PostsView(LoginRequiredMixin, View):
+    template_name = "web_app/posts.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+class ReviewView(LoginRequiredMixin, View):
+    template_name = "web_app/review.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+class SubscriptionsView(LoginRequiredMixin, View):
+    template_name = "web_app/subscriptions.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+class TicketView(LoginRequiredMixin, View):
+    template_name = "web_app/ticket.html"
+
+    def get(self, request):
+        return render(request, self.template_name)
