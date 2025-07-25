@@ -69,7 +69,8 @@ class PostsView(LoginRequiredMixin, View):
     template_name = "web_app/posts.html"
 
     def get(self, request):
-        return render(request, self.template_name)
+        tickets = Ticket.objects.filter(user=request.user).order_by("-time_created")
+        return render(request, self.template_name, {"tickets": tickets})
 
 
 class ReviewView(LoginRequiredMixin, View):
