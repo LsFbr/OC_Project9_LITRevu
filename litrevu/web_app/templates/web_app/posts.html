@@ -1,7 +1,40 @@
 {% extends 'web_app/base.html' %}
 {% block title %}Vos posts - LITRevu{% endblock %}
 {% block content %}
-<div class="container mx-auto px-4">
+<div class="container text-center mx-auto px-4">
     <h1 class="text-2xl font-bold text-gray-800">Vos posts</h1>
 </div>
+{% for ticket in tickets %}
+    <div class="max-w-2xl mx-auto bg-white rounded shadow p-4 mt-6">
+        <div class="flex justify-between items-center">
+            {% if ticket.user == user %}
+                <p class="text-gray-500 text-sm mb-2">
+                    Vous avez demandé une critique
+                </p>
+            {% else %}
+                <p class="text-gray-500 text-sm mb-2">
+                    {{ ticket.user.username }} a demandé une critique
+                </p>
+            {% endif %}
+            <p class="text-gray-500 text-sm mb-2">
+                {{ ticket.time_created|date:"H:i d M Y" }}
+            </p>
+        </div>
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">{{ ticket.title }}</h2>
+        <p class="text-gray-700 mb-4">{{ ticket.description }}</p>
+        {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="Image du ticket" class="w-auto max-h-64 object-cover rounded mb-4">
+        {% endif %}
+        <div class="flex justify-end gap-4">
+            <a href="{% url 'posts' %}" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
+                Modifier
+            </a>
+            <a href="{% url 'posts' %}" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
+                Supprimer
+            </a>
+        </div>
+    </div>
+{% empty %}
+    <p class="text-center text-gray-600 mt-8">Aucun ticket pour le moment.</p>
+{% endfor %}
 {% endblock %}
