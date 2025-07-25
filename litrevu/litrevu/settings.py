@@ -133,3 +133,6 @@ AUTH_USER_MODEL = 'web_app.User'
 LOGIN_URL = "login"
 
 LOGIN_REDIRECT_URL = "flux"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
