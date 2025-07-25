@@ -15,12 +15,12 @@ class LoginForm(forms.Form):
     )
     password = forms.CharField(
         max_length=63,
+        label="Mot de passe",
         widget=forms.PasswordInput(attrs={
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
             'placeholder': 'Mot de passe',
             'required': True
-        }),
-        label="Mot de passe"
+        })
     )
 
 
@@ -53,3 +53,32 @@ class RegisterForm(UserCreationForm):
             'label': 'Confirmer mot de passe',
             'required': True,
         })
+
+
+class TicketForm(forms.Form):
+    title = forms.CharField(
+        max_length=128,
+        label="Titre",
+        widget=forms.TextInput(attrs={
+            'class': 'w-full border border-gray-400 rounded px-4 py-2',
+            'placeholder': 'Titre',
+            'required': True
+        })
+    )
+    description = forms.CharField(
+        max_length=2048,
+        label="Description",
+        widget=forms.Textarea(attrs={
+            'class': 'w-full border border-gray-400 rounded px-4 py-2',
+            'placeholder': 'Description',
+            'required': True
+        })
+    )
+    image = forms.ImageField(
+        label="Image",
+        required=False,
+        widget=forms.FileInput(attrs={
+            'class': 'py-2',
+            'placeholder': 'Image'
+        })
+    )
