@@ -25,4 +25,8 @@ urlpatterns = [
     path("", views.LoginView.as_view(), name="login"),
     path("register/", views.RegisterView.as_view(), name="register"),
     path("flux/", views.FluxView.as_view(), name="flux"),
+    path("posts/", views.PostsView.as_view(), name="posts"),
+    path("review/", views.ReviewView.as_view(), name="review"),
+    path("subscriptions/", views.SubscriptionsView.as_view(), name="subscriptions"),
+    path("ticket/", views.TicketView.as_view(), name="ticket"),
 ]
