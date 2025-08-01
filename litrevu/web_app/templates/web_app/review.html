@@ -1,7 +1,102 @@
-{% extends 'web_app/base.html' %}
-{% block title %}Créer une critique - LITRevu{% endblock %}
+{% extends "web_app/base.html" %}
+{% block title %}Créer une critique{% endblock %}
+
 {% block content %}
-<div class="container mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-800">Créer une critique</h1>
+<div class="container max-w-2xl mx-auto px-4">
+
+    <h1 class="text-2xl font-bold text-gray-800 text-center mb-8">
+        {% if ticket %}Créer une critique{% else %}Créer un ticket et une critique{% endif %}
+    </h1>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-8 bg-white p-6 shadow rounded">
+        {% csrf_token %}
+
+        <!-- S'il faut créer un ticket -->
+        {% if ticket_form %}
+        <fieldset>
+            <legend class="text-lg font-semibold text-gray-700 mb-4">Ticket</legend>
+
+            <div class="mb-4">
+                <label for="{{ ticket_form.title.id_for_label }}" class="block text-gray-600 mb-1">Titre</label>
+                {{ ticket_form.title }}
+                {% if ticket_form.title.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ ticket_form.title.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ ticket_form.description.id_for_label }}" class="block text-gray-600 mb-1">Description</label>
+                {{ ticket_form.description }}
+                {% if ticket_form.description.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ ticket_form.description.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ ticket_form.image.id_for_label }}" class="block text-gray-600 mb-1">Image</label>
+                {{ ticket_form.image }}
+            </div>
+        </fieldset>
+        <!-- Si le ticket existe déjà -->
+        {% elif ticket %}
+        <div class="border p-4 bg-gray-50 rounded">
+            <div class="flex justify-between items-center">
+                {% if ticket.user == user %}
+                    <p class="text-sm text-gray-500 mb-2">Votre ticket</p>
+                {% else %}
+                    <p class="text-sm text-gray-500 mb-2">Ticket de {{ ticket.user.username }}</p>
+                {% endif %}
+                <p class="text-sm text-gray-500 mb-2">Créé le {{ ticket.time_created|date:"H:i d M Y" }}</p>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">{{ ticket.title }}</h2>
+            <p class="text-gray-700 mt-2">{{ ticket.description }}</p>
+            {% if ticket.image %}
+                <img src="{{ ticket.image.url }}" alt="Image du ticket" class="mt-4 max-h-48 rounded">
+            {% endif %}
+        </div>
+        {% endif %}
+       <div class="border-t border-gray-400 pt-4">
+        <!-- Critique -->
+        <fieldset>
+            <legend class="text-lg font-semibold text-gray-700 mb-4">Critique</legend>
+
+            <div class="mb-4">
+                <label for="{{ review_form.headline.id_for_label }}" class="block text-gray-600 mb-1">Titre</label>
+                {{ review_form.headline }}
+                {% if review_form.headline.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ review_form.headline.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <p class="text-gray-600 mb-1">Note</p>
+                <div class="flex justify-between">
+                {% for radio in review_form.rating %}
+                    <label class="inline-flex items-center gap-1">
+                    {{ radio.tag }} <span class="ml-1">{{ radio.choice_label }}</span>
+                    </label>
+                {% endfor %}
+                </div>
+                {% if review_form.rating.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ review_form.rating.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-4">
+                <label for="{{ review_form.body.id_for_label }}" class="block text-gray-600 mb-1">Commentaire</label>
+                {{ review_form.body }}
+                {% if review_form.body.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ review_form.body.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </fieldset>
+
+        <div class="flex justify-end">
+            <button type="submit" class="bg-blue-600 text-white font-medium py-2 px-6 rounded hover:bg-blue-700">
+                Publier
+            </button>
+        </div>
+    </form>
+
 </div>
 {% endblock %}
