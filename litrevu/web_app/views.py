@@ -2,10 +2,11 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.shortcuts import redirect
-from django.views.generic import View
+from django.views.generic import View, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from web_app.forms import LoginForm, RegisterForm, TicketForm
 from web_app.models import Ticket
+from django.urls import reverse_lazy
 
 
 class LogoutView(View):
@@ -110,3 +111,42 @@ class TicketView(LoginRequiredMixin, View):
             message = "Erreur lors de la création du ticket"
             print(form.errors)
         return render(request, self.template_name, {"form": form, "message": message})
+
+
+class TicketEditView(LoginRequiredMixin, View):
+    template_name = "web_app/ticket_edit.html"
+    form_class = TicketForm
+
+    def get(self, request, ticket_id):
+        ticket = Ticket.objects.get(id=ticket_id, user=request.user)
+        form = self.form_class(initial={
+            'title': ticket.title,
+            'description': ticket.description,
+            'image': ticket.image,
+        })
+        return render(request, self.template_name, {"form": form, "ticket": ticket})
+
+    def post(self, request, ticket_id):
+        ticket = Ticket.objects.get(id=ticket_id, user=request.user)
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            ticket.title = form.cleaned_data["title"]
+            ticket.description = form.cleaned_data["description"]
+            new_image = form.cleaned_data.get("image")
+            if new_image:
+                if ticket.image and ticket.image != new_image:
+                    ticket.image.delete(save=False)
+                ticket.image = new_image
+
+            ticket.save()
+            return redirect("posts")
+        return render(request, self.template_name, {"form": form, "ticket": ticket})
+
+
+class TicketDeleteView(LoginRequiredMixin, DeleteView):
+    model = Ticket
+    template_name = "web_app/ticket_confirm_delete.html"
+    success_url = reverse_lazy("posts")
+
+    def get_queryset(self):
+        return Ticket.objects.filter(user=self.request.user)
