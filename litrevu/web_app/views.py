@@ -4,7 +4,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from web_app.forms import LoginForm, RegisterForm, TicketForm
+from web_app.forms import LoginForm, RegisterForm, TicketForm, ReviewForm
 from web_app.models import Ticket
 
 
@@ -54,13 +54,6 @@ class PostsView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"tickets": tickets})
 
 
-class ReviewView(LoginRequiredMixin, View):
-    template_name = "web_app/review.html"
-
-    def get(self, request):
-        return render(request, self.template_name)
-
-
 class SubscriptionsView(LoginRequiredMixin, View):
     template_name = "web_app/subscriptions.html"
 
@@ -68,7 +61,7 @@ class SubscriptionsView(LoginRequiredMixin, View):
         return render(request, self.template_name)
 
 
-class TicketView(LoginRequiredMixin, View):
+class TicketCreateView(LoginRequiredMixin, View):
     template_name = "web_app/ticket.html"
     form_class = TicketForm
 
@@ -128,3 +121,49 @@ class TicketDeleteView(LoginRequiredMixin, View):
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
         ticket.delete()
         return redirect("posts")
+
+
+class ReviewCreateView(View):
+    def get(self, request, ticket_id=None):
+        if ticket_id:
+            ticket = get_object_or_404(Ticket, id=ticket_id)
+            review_form = ReviewForm()
+            return render(request, "web_app/review.html", {
+                "ticket": ticket,
+                "review_form": review_form
+            })
+        else:
+            ticket_form = TicketForm()
+            review_form = ReviewForm()
+            return render(request, "web_app/review.html", {
+                "ticket_form": ticket_form,
+                "review_form": review_form
+            })
+
+    def post(self, request, ticket_id=None):
+        if ticket_id:
+            ticket = get_object_or_404(Ticket, id=ticket_id)
+        else:
+            ticket_form = TicketForm(request.POST, request.FILES)
+            if ticket_form.is_valid():
+                ticket = ticket_form.save(commit=False)
+                ticket.user = request.user
+                ticket.save()
+            else:
+                review_form = ReviewForm(request.POST)
+                return render(request, "web_app/review.html", {
+                    "ticket_form": ticket_form,
+                    "review_form": review_form
+                })
+
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.ticket = ticket
+            review.save()
+            return redirect("flux")
+        return render(request, "web_app/review.html", {
+            "ticket": ticket,
+            "review_form": review_form
+        })
