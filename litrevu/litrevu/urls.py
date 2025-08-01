@@ -28,10 +28,12 @@ urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
     path("flux/", views.FluxView.as_view(), name="flux"),
     path("posts/", views.PostsView.as_view(), name="posts"),
-    path("review/", views.ReviewView.as_view(), name="review"),
     path("subscriptions/", views.SubscriptionsView.as_view(), name="subscriptions"),
-    path("ticket/", views.TicketView.as_view(), name="ticket"),
+    path("ticket/", views.TicketCreateView.as_view(), name="ticket"),
     path("ticket/edit/<int:ticket_id>/", views.TicketEditView.as_view(), name="edit_ticket"),
     path("ticket/delete/<int:ticket_id>/", views.TicketDeleteView.as_view(), name="delete_ticket"),
+    path("review/", views.ReviewCreateView.as_view(), name="review"),
+    path("review/ticket/<int:ticket_id>/", views.ReviewCreateView.as_view(), name="review_from_ticket"),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
