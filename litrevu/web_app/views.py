@@ -1,12 +1,11 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login, logout
-from django.conf import settings
-from django.shortcuts import redirect
-from django.views.generic import View, DeleteView
+from django.contrib.auth import logout
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from web_app.forms import LoginForm, RegisterForm, TicketForm
 from web_app.models import Ticket
-from django.urls import reverse_lazy
 
 
 class LogoutView(View):
@@ -15,29 +14,10 @@ class LogoutView(View):
         return redirect("login")
 
 
-class LoginView(View):
+class CustomLoginView(LoginView):
     template_name = "web_app/login.html"
-    form_class = LoginForm
-    success_url = "flux"
-
-    def get(self, request):
-        form = self.form_class()
-        message = ""
-        return render(request, self.template_name, {"form": form, "message": message})
-
-    def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = authenticate(
-                username=form.cleaned_data["username"],
-                password=form.cleaned_data["password"],
-            )
-            if user is not None:
-                login(request, user)
-                return redirect(settings.LOGIN_REDIRECT_URL)
-            else:
-                message = 'Identifiants invalides.'
-        return render(request, self.template_name, {"form": form, "message": message})
+    authentication_form = LoginForm
+    redirect_authenticated_user = True
 
 
 class RegisterView(View):
@@ -143,10 +123,8 @@ class TicketEditView(LoginRequiredMixin, View):
         return render(request, self.template_name, {"form": form, "ticket": ticket})
 
 
-class TicketDeleteView(LoginRequiredMixin, DeleteView):
-    model = Ticket
-    template_name = "web_app/ticket_confirm_delete.html"
-    success_url = reverse_lazy("posts")
-
-    def get_queryset(self):
-        return Ticket.objects.filter(user=self.request.user)
+class TicketDeleteView(LoginRequiredMixin, View):
+    def post(self, request, ticket_id):
+        ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
+        ticket.delete()
+        return redirect("posts")
