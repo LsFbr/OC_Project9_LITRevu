@@ -4,6 +4,11 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
 class LoginForm(AuthenticationForm):
+
+    error_messages = {
+        "invalid_login": "Nom d'utilisateur ou mot de passe incorrect.",
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
