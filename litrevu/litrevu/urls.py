@@ -24,7 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("logout/", views.LogoutView.as_view(), name="logout"),
-    path("", views.LoginView.as_view(), name="login"),
+    path("", views.CustomLoginView.as_view(), name="login"),
     path("register/", views.RegisterView.as_view(), name="register"),
     path("flux/", views.FluxView.as_view(), name="flux"),
     path("posts/", views.PostsView.as_view(), name="posts"),
@@ -32,6 +32,6 @@ urlpatterns = [
     path("subscriptions/", views.SubscriptionsView.as_view(), name="subscriptions"),
     path("ticket/", views.TicketView.as_view(), name="ticket"),
     path("ticket/edit/<int:ticket_id>/", views.TicketEditView.as_view(), name="edit_ticket"),
-    path("ticket/delete/<int:pk>/", views.TicketDeleteView.as_view(), name="delete_ticket"),
+    path("ticket/delete/<int:ticket_id>/", views.TicketDeleteView.as_view(), name="delete_ticket"),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
