@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from web_app.models import Ticket, Review
 
 
 class LoginForm(AuthenticationForm):
@@ -55,30 +56,48 @@ class RegisterForm(UserCreationForm):
         })
 
 
-class TicketForm(forms.Form):
-    title = forms.CharField(
-        max_length=128,
-        label="Titre",
-        widget=forms.TextInput(attrs={
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["title", "description", "image"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['title'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
             'placeholder': 'Titre',
-            'required': True
+            'required': True,
         })
-    )
-    description = forms.CharField(
-        max_length=2048,
-        label="Description",
-        widget=forms.Textarea(attrs={
+        self.fields['description'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
             'placeholder': 'Description',
-            'required': True
+            'required': True,
         })
-    )
-    image = forms.ImageField(
-        label="Image",
-        required=False,
-        widget=forms.FileInput(attrs={
+        self.fields['image'].widget.attrs.update({
             'class': 'py-2',
-            'placeholder': 'Image'
+            'placeholder': 'Image',
+            'required': False,
         })
-    )
+
+
+class ReviewForm(forms.ModelForm):
+    RATING_CHOICES = [(i, str(i)) for i in range(6)]
+    rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.RadioSelect)
+
+    class Meta:
+        model = Review
+        fields = ["headline", "rating", "body"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['headline'].widget.attrs.update({
+            'class': 'w-full border border-gray-400 rounded px-4 py-2',
+            'placeholder': 'Titre',
+            'required': True,
+        })
+
+        self.fields['body'].widget.attrs.update({
+            'class': 'w-full border border-gray-400 rounded px-4 py-2',
+            'placeholder': 'Commentaire',
+            'required': True,
+        })
