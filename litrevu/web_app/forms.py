@@ -1,27 +1,22 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        max_length=40,
-        label="Nom d'utilisateur",
-        widget=forms.TextInput(attrs={
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
             'placeholder': 'Nom d\'utilisateur',
-            'required': True
+            'required': True,
         })
-    )
-    password = forms.CharField(
-        max_length=63,
-        label="Mot de passe",
-        widget=forms.PasswordInput(attrs={
+        self.fields['password'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
             'placeholder': 'Mot de passe',
-            'required': True
+            'required': True,
         })
-    )
 
 
 class RegisterForm(UserCreationForm):
