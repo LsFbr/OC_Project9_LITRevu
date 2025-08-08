@@ -28,9 +28,11 @@
                 <img src="{{ item.image.url }}" alt="Image du ticket" class="w-auto max-h-64 object-cover rounded mb-4">
             {% endif %}
             <div class="flex justify-end gap-4">
-                <a href="{% url 'review_from_ticket' item.id %}" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
-                    Créer une critique
-                </a>
+                {% if item.id not in reviewed_ticket_ids %}
+                    <a href="{% url 'review_from_ticket' item.id %}" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
+                        Créer une critique
+                    </a>
+                {% endif %}
             </div>
         {% else %} {# review #}
             <div class="flex justify-between items-center">
