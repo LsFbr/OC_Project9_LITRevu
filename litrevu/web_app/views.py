@@ -215,3 +215,10 @@ class ReviewEditView(LoginRequiredMixin, View):
             "review_form": review_form,
             "ticket": review.ticket
         })
+
+
+class ReviewDeleteView(LoginRequiredMixin, View):
+    def post(self, request, review_id):
+        review = get_object_or_404(Review, id=review_id, user=request.user)
+        review.delete()
+        return redirect("posts")
