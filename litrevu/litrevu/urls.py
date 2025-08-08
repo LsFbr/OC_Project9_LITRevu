@@ -34,6 +34,7 @@ urlpatterns = [
     path("ticket/delete/<int:ticket_id>/", views.TicketDeleteView.as_view(), name="delete_ticket"),
     path("review/", views.ReviewCreateView.as_view(), name="review"),
     path("review/ticket/<int:ticket_id>/", views.ReviewCreateView.as_view(), name="review_from_ticket"),
+    path("review/edit/<int:review_id>/", views.ReviewEditView.as_view(), name="edit_review"),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
