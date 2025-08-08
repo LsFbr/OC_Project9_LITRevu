@@ -1,3 +1,5 @@
+from itertools import chain
+from django.db.models import Value, CharField
 from django.shortcuts import render
 from django.contrib.auth import logout
 from django.shortcuts import redirect, get_object_or_404
@@ -5,7 +7,7 @@ from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from web_app.forms import LoginForm, RegisterForm, TicketForm, ReviewForm
-from web_app.models import Ticket
+from web_app.models import Ticket, Review
 
 
 class LogoutView(View):
@@ -42,8 +44,16 @@ class FluxView(LoginRequiredMixin, View):
     template_name = "web_app/flux.html"
 
     def get(self, request):
-        tickets = Ticket.objects.all().order_by("-time_created")
-        return render(request, self.template_name, {"tickets": tickets})
+        tickets = Ticket.objects.all().annotate(content_type=Value("ticket", CharField()))
+        reviews = Review.objects.select_related("ticket", "user", "ticket__user") \
+                                .annotate(content_type=Value("review", CharField()))
+
+        content = sorted(
+            chain(tickets, reviews),
+            key=lambda object: (object.time_created, 1 if object.content_type == "review" else 0),
+            reverse=True
+        )
+        return render(request, self.template_name, {"content": content})
 
 
 class PostsView(LoginRequiredMixin, View):
