@@ -53,7 +53,9 @@ class FluxView(LoginRequiredMixin, View):
             key=lambda object: (object.time_created, 1 if object.content_type == "review" else 0),
             reverse=True
         )
-        return render(request, self.template_name, {"content": content})
+
+        reviewed_ticket_ids = Review.objects.values_list("ticket_id", flat=True)
+        return render(request, self.template_name, {"content": content, "reviewed_ticket_ids": reviewed_ticket_ids})
 
 
 class PostsView(LoginRequiredMixin, View):
