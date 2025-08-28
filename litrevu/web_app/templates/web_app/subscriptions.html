@@ -50,22 +50,22 @@
     <section class="bg-white rounded shadow p-6">
       <h2 class="text-center text-lg font-semibold text-gray-800 mb-4">Abonnements</h2>
       <ul class="divide-y">
-        {% for rel in subscriptions %}
+        {% for user_follow in subscriptions %}
           <li class="py-3 flex items-center justify-between">
             <div class="truncate">
-              <span class="text-gray-800">{{ rel.followed_user.username }}</span>
+              <span class="text-gray-800">{{ user_follow.followed_user.username }}</span>
             </div>
             <form method="post" action="{% url 'subscriptions' %}">
               {% csrf_token %}
               <input type="hidden" name="operation" value="unfollow">
-              <input type="hidden" name="relation_id" value="{{ rel.id }}">
+              <input type="hidden" name="user_follow_id" value="{{ user_follow.id }}">
               <button class="border border-red-600 text-red-600 font-medium py-1 px-4 rounded hover:bg-red-50">
                 Se désabonner
               </button>
             </form>
           </li>
         {% empty %}
-          <li class="py-2 text-gray-600">Vous ne suivez encore personne.</li>
+          <li class="py-2 text-gray-600">Vous ne suivez personne pour le moment.</li>
         {% endfor %}
       </ul>
     </section>
@@ -74,9 +74,9 @@
     <section class="bg-white rounded shadow p-6">
       <h2 class="text-center text-lg font-semibold text-gray-800 mb-4">Abonnés</h2>
       <ul class="divide-y">
-        {% for rel in followers %}
+        {% for user_follow in followers %}
           <li class="py-3">
-            <span class="text-gray-800">{{ rel.user.username }}</span>
+            <span class="text-gray-800">{{ user_follow.user.username }}</span>
           </li>
         {% empty %}
           <li class="py-2 text-gray-600">Aucun abonné pour le moment.</li>

@@ -117,14 +117,14 @@ class SubscriptionsView(LoginRequiredMixin, View):
 
         if operation == "unfollow":
             # Désabonnement
-            relation_id = request.POST.get("relation_id")
-            rel = get_object_or_404(UserFollows, id=relation_id, user=request.user)
-            username = rel.followed_user.username
-            rel.delete()
+            user_follow_id = request.POST.get("user_follow_id")
+            user_follow = get_object_or_404(UserFollows, id=user_follow_id, user=request.user)
+            username = user_follow.followed_user.username
+            user_follow.delete()
             messages.success(request, f"Vous ne suivez plus {username}.")
             return redirect("subscriptions")
 
-        # Sinon : abonnement
+        # Abonnement
         form = FollowForm(request.POST, request_user=request.user)
         if form.is_valid():
             to_follow = form.user_to_follow  # défini par clean_username()
