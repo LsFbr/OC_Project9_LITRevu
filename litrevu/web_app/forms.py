@@ -57,6 +57,10 @@ class RegisterForm(UserCreationForm):
 
 
 class TicketForm(forms.ModelForm):
+    remove_image = forms.BooleanField(
+        required=False, label="Supprimer l’image actuelle"
+    )
+
     class Meta:
         model = Ticket
         fields = ["title", "description", "image"]
@@ -78,6 +82,8 @@ class TicketForm(forms.ModelForm):
             'placeholder': 'Image',
             'required': False,
         })
+        if not getattr(self.instance, "image", None):
+            self.fields["remove_image"].widget = forms.HiddenInput()
 
 
 class ReviewForm(forms.ModelForm):
@@ -101,3 +107,33 @@ class ReviewForm(forms.ModelForm):
             'placeholder': 'Commentaire',
             'required': True,
         })
+
+
+class FollowForm(forms.Form):
+    username = forms.CharField(
+        label="Nom d'utilisateur",
+        max_length=40,
+        widget=forms.TextInput(attrs={
+            "class": "w-full border border-gray-400 rounded px-4 py-2",
+            "placeholder": "Nom d'utilisateur",
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.request_user = kwargs.pop("request_user", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_username(self):
+        User = get_user_model()
+        username = self.cleaned_data["username"].strip()
+        # utilisateur existe ?
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise forms.ValidationError("Utilisateur introuvable.")
+        # pas soi-même
+        if self.request_user and user == self.request_user:
+            raise forms.ValidationError("Vous ne pouvez pas vous abonner à vous-même.")
+        # on stocke l’objet pour la vue
+        self.user_to_follow = user
+        return username
