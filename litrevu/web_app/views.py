@@ -1,13 +1,14 @@
 from itertools import chain
-from django.db.models import Value, CharField
-from django.shortcuts import render
+from django.db.models import Value, CharField, Q
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
-from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from django.db import IntegrityError
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from web_app.forms import LoginForm, RegisterForm, TicketForm, ReviewForm
-from web_app.models import Ticket, Review
+from web_app.forms import LoginForm, RegisterForm, TicketForm, ReviewForm, FollowForm
+from web_app.models import Ticket, Review, UserFollows
 
 
 class LogoutView(View):
@@ -44,9 +45,22 @@ class FluxView(LoginRequiredMixin, View):
     template_name = "web_app/flux.html"
 
     def get(self, request):
-        tickets = Ticket.objects.all().annotate(content_type=Value("ticket", CharField()))
-        reviews = Review.objects.select_related("ticket", "user", "ticket__user") \
-                                .annotate(content_type=Value("review", CharField()))
+        followed_ids = UserFollows.objects.filter(user=request.user) \
+            .values_list("followed_user_id", flat=True)
+
+        tickets = (
+            Ticket.objects
+            .filter(Q(user=request.user) | Q(user_id__in=followed_ids))
+            .select_related("user")
+            .annotate(content_type=Value("ticket", output_field=CharField()))
+        )
+
+        reviews = (
+            Review.objects
+            .filter(Q(user=request.user) | Q(user_id__in=followed_ids) | Q(ticket__user=request.user))
+            .select_related("user", "ticket", "ticket__user")
+            .annotate(content_type=Value("review", output_field=CharField()))
+        )
         content = sorted(
             chain(tickets, reviews),
             key=lambda object: (object.time_created, 1 if object.content_type == "review" else 0),
@@ -74,8 +88,56 @@ class PostsView(LoginRequiredMixin, View):
 class SubscriptionsView(LoginRequiredMixin, View):
     template_name = "web_app/subscriptions.html"
 
+    def _context(self, request, form=None):
+        """Construit le contexte pour le GET et pour ré-afficher en cas d'erreur de form."""
+        follow_form = form or FollowForm(request_user=request.user)
+        subscriptions = (
+            UserFollows.objects
+            .select_related("followed_user")
+            .filter(user=request.user)
+            .order_by("followed_user__username")
+        )
+        followers = (
+            UserFollows.objects
+            .select_related("user")
+            .filter(followed_user=request.user)
+            .order_by("user__username")
+        )
+        return {
+            "follow_form": follow_form,
+            "subscriptions": subscriptions,
+            "followers": followers,
+        }
+
     def get(self, request):
-        return render(request, self.template_name)
+        return render(request, self.template_name, self._context(request))
+
+    def post(self, request):
+        operation = request.POST.get("operation", "follow")
+
+        if operation == "unfollow":
+            # Désabonnement
+            relation_id = request.POST.get("relation_id")
+            rel = get_object_or_404(UserFollows, id=relation_id, user=request.user)
+            username = rel.followed_user.username
+            rel.delete()
+            messages.success(request, f"Vous ne suivez plus {username}.")
+            return redirect("subscriptions")
+
+        # Sinon : abonnement
+        form = FollowForm(request.POST, request_user=request.user)
+        if form.is_valid():
+            to_follow = form.user_to_follow  # défini par clean_username()
+            try:
+                UserFollows.objects.create(user=request.user, followed_user=to_follow)
+            except IntegrityError:
+                messages.warning(request, f"Vous suivez déjà {to_follow.username}.")
+            else:
+                messages.success(request, f"Vous suivez maintenant {to_follow.username}.")
+            return redirect("subscriptions")
+
+        # Form invalide : on ré-affiche avec erreurs
+        return render(request, self.template_name, self._context(request, form=form))
 
 
 class TicketCreateView(LoginRequiredMixin, View):
@@ -88,17 +150,12 @@ class TicketCreateView(LoginRequiredMixin, View):
     def post(self, request):
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
-            ticket = Ticket(
-                title=form.cleaned_data["title"],
-                description=form.cleaned_data["description"],
-                image=form.cleaned_data["image"],
-                user=request.user
-            )
+            ticket = form.save(commit=False)
+            ticket.user = request.user
             ticket.save()
             return redirect("flux")
         else:
             message = "Erreur lors de la création du ticket"
-            print(form.errors)
         return render(request, self.template_name, {"form": form, "message": message})
 
 
@@ -120,9 +177,15 @@ class TicketEditView(LoginRequiredMixin, View):
         if form.is_valid():
             ticket.title = form.cleaned_data["title"]
             ticket.description = form.cleaned_data["description"]
+
+            if form.cleaned_data.get("remove_image"):
+                if ticket.image:
+                    ticket.image.delete(save=False)
+                ticket.image = None
+
             new_image = form.cleaned_data.get("image")
             if new_image:
-                if ticket.image and ticket.image != new_image:
+                if ticket.image and ticket.image != new_image and not form.cleaned_data.get("remove_image"):
                     ticket.image.delete(save=False)
                 ticket.image = new_image
 
