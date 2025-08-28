@@ -53,6 +53,8 @@
                     {% for i in "12345" %}
                         {% if forloop.counter <= item.rating %}
                             ★
+                        {% else %}
+                            ☆
                         {% endif %}
                     {% endfor %}
                 </span>
