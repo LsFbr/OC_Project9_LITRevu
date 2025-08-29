@@ -127,7 +127,7 @@ class SubscriptionsView(LoginRequiredMixin, View):
         # Abonnement
         form = FollowForm(request.POST, request_user=request.user)
         if form.is_valid():
-            to_follow = form.user_to_follow  # défini par clean_username()
+            to_follow = form.user_to_follow
             try:
                 UserFollows.objects.create(user=request.user, followed_user=to_follow)
             except IntegrityError:
@@ -136,7 +136,6 @@ class SubscriptionsView(LoginRequiredMixin, View):
                 messages.success(request, f"Vous suivez maintenant {to_follow.username}.")
             return redirect("subscriptions")
 
-        # Form invalide : on ré-affiche avec erreurs
         return render(request, self.template_name, self._context(request, form=form))
 
 
@@ -178,14 +177,14 @@ class TicketEditView(LoginRequiredMixin, View):
             ticket.title = form.cleaned_data["title"]
             ticket.description = form.cleaned_data["description"]
 
-            if form.cleaned_data.get("remove_image"):
+            if request.POST.get("image-clear") == "on":
                 if ticket.image:
                     ticket.image.delete(save=False)
                 ticket.image = None
 
             new_image = form.cleaned_data.get("image")
             if new_image:
-                if ticket.image and ticket.image != new_image and not form.cleaned_data.get("remove_image"):
+                if ticket.image and ticket.image != new_image:
                     ticket.image.delete(save=False)
                 ticket.image = new_image
 
