@@ -57,9 +57,6 @@ class RegisterForm(UserCreationForm):
 
 
 class TicketForm(forms.ModelForm):
-    remove_image = forms.BooleanField(
-        required=False, label="Supprimer l’image actuelle"
-    )
 
     class Meta:
         model = Ticket
@@ -82,8 +79,6 @@ class TicketForm(forms.ModelForm):
             'placeholder': 'Image',
             'required': False,
         })
-        if not getattr(self.instance, "image", None):
-            self.fields["remove_image"].widget = forms.HiddenInput()
 
 
 class ReviewForm(forms.ModelForm):
