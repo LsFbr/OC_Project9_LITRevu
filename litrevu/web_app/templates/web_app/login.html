@@ -14,18 +14,33 @@
         <div>
             <h2 class="text-xl font-semibold mb-6 text-center">Connectez-vous</h2>
             {% if form.non_field_errors %}
-                <p class="text-red-500 mt-2">{{ form.non_field_errors.0 }}</p>
+                <div class="text-red-500 mt-2" role="alert" aria-live="polite">
+                    {{ form.non_field_errors.0 }}
+                </div>
             {% endif %}
             <form method="post" aria-label="Formulaire de connexion" id="login-form">
                 {% csrf_token %}
-                <div class="mb-4">
-                    <label for="{{ form.username.id_for_label }}" class="sr-only">{{ form.username.label }}</label>
-                    {{ form.username }}
-                </div>
-                <div class="mb-6">
-                    <label for="{{ form.password.id_for_label }}" class="sr-only">{{ form.password.label }}</label>
-                    {{ form.password }}
-                </div>
+                <fieldset>
+                    <legend class="sr-only">Informations de connexion</legend>
+                    <div class="mb-4">
+                        <label for="{{ form.username.id_for_label }}" class="sr-only">{{ form.username.label }}</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">
+                                {{ form.username.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-6">
+                        <label for="{{ form.password.id_for_label }}" class="sr-only">{{ form.password.label }}</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">
+                                {{ form.password.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </fieldset>
                 <div class="text-right">
                     <button type="submit"
                             class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
