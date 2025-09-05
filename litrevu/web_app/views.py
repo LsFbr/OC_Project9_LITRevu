@@ -163,11 +163,7 @@ class TicketEditView(LoginRequiredMixin, View):
 
     def get(self, request, ticket_id):
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
-        form = TicketForm(initial={
-            'title': ticket.title,
-            'description': ticket.description,
-            'image': ticket.image,
-        })
+        form = TicketForm(instance=ticket)
         return render(request, self.template_name, {"form": form, "ticket": ticket})
 
     def post(self, request, ticket_id):
