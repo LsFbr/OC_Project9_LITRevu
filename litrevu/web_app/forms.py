@@ -5,12 +5,14 @@ from web_app.models import Ticket, Review
 
 
 class LoginForm(AuthenticationForm):
+    """Formulaire personnalisé pour la connexion des utilisateurs."""
 
     error_messages = {
         "invalid_login": "Nom d'utilisateur ou mot de passe incorrect.",
     }
 
     def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec les attributs CSS personnalisés."""
         super().__init__(*args, **kwargs)
 
         self.fields['username'].widget.attrs.update({
@@ -26,11 +28,15 @@ class LoginForm(AuthenticationForm):
 
 
 class RegisterForm(UserCreationForm):
+    """Formulaire personnalisé pour l'inscription des nouveaux utilisateurs."""
+
     class Meta:
+        """Métadonnées du formulaire d'inscription."""
         model = get_user_model()
         fields = ['username']
 
     def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec les attributs CSS et messages d'erreur personnalisés."""
         super().__init__(*args, **kwargs)
         self.fields['username'].error_messages = {
             'unique': 'Ce nom d\'utilisateur est déjà utilisé.',
@@ -57,12 +63,15 @@ class RegisterForm(UserCreationForm):
 
 
 class TicketForm(forms.ModelForm):
+    """Formulaire pour créer et modifier des tickets."""
 
     class Meta:
+        """Métadonnées du formulaire de ticket."""
         model = Ticket
         fields = ["title", "description", "image"]
 
     def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec les attributs CSS personnalisés."""
         super().__init__(*args, **kwargs)
         self.fields['title'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
@@ -82,14 +91,18 @@ class TicketForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    """Formulaire pour créer et modifier des critiques."""
+
     RATING_CHOICES = [(i, str(i)) for i in range(6)]
     rating = forms.ChoiceField(choices=RATING_CHOICES, widget=forms.RadioSelect)
 
     class Meta:
+        """Métadonnées du formulaire de critique."""
         model = Review
         fields = ["headline", "rating", "body"]
 
     def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec les attributs CSS personnalisés."""
         super().__init__(*args, **kwargs)
         self.fields['headline'].widget.attrs.update({
             'class': 'w-full border border-gray-400 rounded px-4 py-2',
@@ -105,6 +118,8 @@ class ReviewForm(forms.ModelForm):
 
 
 class FollowForm(forms.Form):
+    """Formulaire pour s'abonner à un utilisateur."""
+
     username = forms.CharField(
         label="Nom d'utilisateur",
         max_length=40,
@@ -115,10 +130,12 @@ class FollowForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialise le formulaire avec l'utilisateur de la requête."""
         self.request_user = kwargs.pop("request_user", None)
         super().__init__(*args, **kwargs)
 
     def clean_username(self):
+        """Valide le nom d'utilisateur et vérifie qu'il existe et n'est pas l'utilisateur actuel."""
         User = get_user_model()
         username = self.cleaned_data["username"].strip()
         # utilisateur existe ?
