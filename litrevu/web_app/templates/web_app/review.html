@@ -33,10 +33,31 @@
             </div>
 
             <div class="mb-4">
-                <label for="{{ ticket_form.image.id_for_label }}" class="block text-gray-600 mb-1">Image</label>
-                {{ ticket_form.image }}
+                <label class="block text-gray-700 mb-2">Image</label>
+    
+                <input id="id_image" name="image" type="file" accept="image/*" class="sr-only">
+          
+                <label for="id_image"
+                       id="btn-pick-image"
+                       class="inline-flex items-center gap-2 border border-gray-800 text-gray-800 font-medium py-2 px-4 rounded hover:bg-gray-100 cursor-pointer">
+                  <span id="btn-pick-label">Importer une image</span>
+                </label>
+          
+                <button type="button"
+                        id="btn-clear-image"
+                        class="hidden ml-3 inline-flex items-center gap-2 border border-red-600 text-red-600 font-medium py-2 px-4 rounded hover:bg-red-50">
+                  Supprimer fichier
+                </button>
+                <img id="image-preview"
+                    src=""
+                    alt="Aperçu de l'image"
+                    class="hidden w-auto max-h-48 object-cover rounded mt-3">
+                {% if form.image.errors %}
+                    <p class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ form.image.errors.0 }}</p>
+                {% endif %}
             </div>
         </fieldset>
+
         <!-- Si le ticket existe déjà -->
         {% elif ticket %}
         <div class="border p-4 bg-gray-50 rounded">
@@ -56,6 +77,7 @@
         </div>
         {% endif %}
        <div class="border-t border-gray-400 pt-4">
+
         <!-- Critique -->
         <fieldset>
             <legend class="text-lg font-semibold text-gray-700 mb-4">Critique</legend>
@@ -99,4 +121,48 @@
     </form>
 
 </div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fileInput   = document.getElementById("id_image");
+      const btnPickText = document.getElementById("btn-pick-label");
+      const btnClear    = document.getElementById("btn-clear-image");
+      const preview     = document.getElementById("image-preview");
+    
+      if (!fileInput) return;
+    
+      function resetPreview() {
+        preview.src = "";
+        preview.classList.add("hidden");
+        btnClear.classList.add("hidden");
+        btnPickText.textContent = "Télécharger fichier";
+      }
+    
+      function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.classList.remove("hidden");
+          btnClear.classList.remove("hidden");
+          btnPickText.textContent = "Changer fichier";
+        };
+        reader.readAsDataURL(file);
+      }
+    
+      fileInput.addEventListener("change", function () {
+        const file = this.files && this.files[0];
+        if (!file) {
+          resetPreview();
+          return;
+        }
+        showPreview(file);
+      });
+    
+      btnClear?.addEventListener("click", function () {
+        fileInput.value = "";
+        resetPreview();
+      });
+    });
+    </script>
 {% endblock %}
