@@ -116,6 +116,11 @@ class ReviewForm(forms.ModelForm):
             'required': True,
         })
 
+        # Ajouter cursor-pointer aux boutons radio
+        self.fields['rating'].widget.attrs.update({
+            'class': 'cursor-pointer',
+        })
+
 
 class FollowForm(forms.Form):
     """Formulaire pour s'abonner à un utilisateur."""
