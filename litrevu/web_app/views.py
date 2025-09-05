@@ -12,28 +12,35 @@ from web_app.models import Ticket, Review, UserFollows
 
 
 class LogoutView(View):
+    """Vue pour déconnecter l'utilisateur."""
+
     def get(self, request):
+        """Déconnecte l'utilisateur et redirige vers la page de connexion."""
         logout(request)
         return redirect("login")
 
 
 class CustomLoginView(LoginView):
+    """Vue personnalisée pour la connexion des utilisateurs."""
     template_name = "web_app/login.html"
     authentication_form = LoginForm
     redirect_authenticated_user = True
 
 
 class RegisterView(View):
+    """Vue pour l'inscription des nouveaux utilisateurs."""
     template_name = "web_app/register.html"
     form_class = RegisterForm
     success_url = "login"
 
     def get(self, request):
+        """Affiche le formulaire d'inscription."""
         form = self.form_class()
         message = ""
         return render(request, self.template_name, {"form": form, "message": message})
 
     def post(self, request):
+        """Traite le formulaire d'inscription et crée un nouvel utilisateur."""
         form = self.form_class(request.POST)
         if form.is_valid():
             form.save()
@@ -42,9 +49,11 @@ class RegisterView(View):
 
 
 class FluxView(LoginRequiredMixin, View):
+    """Vue pour afficher le flux des tickets et critiques des utilisateurs suivis."""
     template_name = "web_app/flux.html"
 
     def get(self, request):
+        """Récupère et affiche le flux des tickets et critiques."""
         followed_ids = UserFollows.objects.filter(user=request.user) \
             .values_list("followed_user_id", flat=True)
 
@@ -72,9 +81,11 @@ class FluxView(LoginRequiredMixin, View):
 
 
 class PostsView(LoginRequiredMixin, View):
+    """Vue pour afficher les posts (tickets et critiques) de l'utilisateur connecté."""
     template_name = "web_app/posts.html"
 
     def get(self, request):
+        """Récupère et affiche tous les posts de l'utilisateur connecté."""
         tickets = Ticket.objects.filter(user=request.user).annotate(content_type=Value("ticket", CharField()))
         reviews = Review.objects.filter(user=request.user).annotate(content_type=Value("review", CharField()))
         content = sorted(
@@ -86,10 +97,19 @@ class PostsView(LoginRequiredMixin, View):
 
 
 class SubscriptionsView(LoginRequiredMixin, View):
+    """Vue pour gérer les abonnements et désabonnements des utilisateurs."""
     template_name = "web_app/subscriptions.html"
 
     def _context(self, request, form=None):
-        """Construit le contexte pour le GET et pour ré-afficher en cas d'erreur de form."""
+        """Construit le contexte pour le GET et pour ré-afficher en cas d'erreur de form.
+
+        Args:
+            request: La requête HTTP
+            form: Le formulaire à inclure dans le contexte (optionnel)
+
+        Returns:
+            dict: Le contexte contenant les formulaires et listes d'abonnements
+        """
         follow_form = form or FollowForm(request_user=request.user)
         subscriptions = (
             UserFollows.objects
@@ -110,9 +130,11 @@ class SubscriptionsView(LoginRequiredMixin, View):
         }
 
     def get(self, request):
+        """Affiche la page des abonnements avec les formulaires et listes."""
         return render(request, self.template_name, self._context(request))
 
     def post(self, request):
+        """Traite les actions d'abonnement et de désabonnement."""
         operation = request.POST.get("operation", "follow")
 
         if operation == "unfollow":
@@ -140,13 +162,16 @@ class SubscriptionsView(LoginRequiredMixin, View):
 
 
 class TicketCreateView(LoginRequiredMixin, View):
+    """Vue pour créer un nouveau ticket."""
     template_name = "web_app/ticket.html"
 
     def get(self, request):
+        """Affiche le formulaire de création de ticket."""
         form = TicketForm()
         return render(request, self.template_name, {"form": form})
 
     def post(self, request):
+        """Traite le formulaire de création de ticket et sauvegarde le ticket."""
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
             ticket = form.save(commit=False)
@@ -159,14 +184,17 @@ class TicketCreateView(LoginRequiredMixin, View):
 
 
 class TicketEditView(LoginRequiredMixin, View):
+    """Vue pour modifier un ticket existant."""
     template_name = "web_app/ticket_edit.html"
 
     def get(self, request, ticket_id):
+        """Affiche le formulaire de modification de ticket pré-rempli."""
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
         form = TicketForm(instance=ticket)
         return render(request, self.template_name, {"form": form, "ticket": ticket})
 
     def post(self, request, ticket_id):
+        """Traite le formulaire de modification de ticket et sauvegarde les modifications."""
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
         form = TicketForm(request.POST, request.FILES)
         if form.is_valid():
@@ -190,16 +218,21 @@ class TicketEditView(LoginRequiredMixin, View):
 
 
 class TicketDeleteView(LoginRequiredMixin, View):
+    """Vue pour supprimer un ticket."""
+
     def post(self, request, ticket_id):
+        """Supprime un ticket et redirige vers la page des posts."""
         ticket = get_object_or_404(Ticket, id=ticket_id, user=request.user)
         ticket.delete()
         return redirect("posts")
 
 
 class ReviewCreateView(View):
+    """Vue pour créer une nouvelle critique."""
     template_name = "web_app/review.html"
 
     def get(self, request, ticket_id=None):
+        """Affiche le formulaire de création de critique."""
         if ticket_id:
             ticket = get_object_or_404(Ticket, id=ticket_id)
             review_form = ReviewForm()
@@ -216,6 +249,7 @@ class ReviewCreateView(View):
             })
 
     def post(self, request, ticket_id=None):
+        """Traite le formulaire de création de critique et sauvegarde la critique."""
         if ticket_id:
             ticket = get_object_or_404(Ticket, id=ticket_id)
         else:
@@ -245,9 +279,11 @@ class ReviewCreateView(View):
 
 
 class ReviewEditView(LoginRequiredMixin, View):
+    """Vue pour modifier une critique existante."""
     template_name = "web_app/review_edit.html"
 
     def get(self, request, review_id):
+        """Affiche le formulaire de modification de critique pré-rempli."""
         review = get_object_or_404(Review, id=review_id, user=request.user)
         ticket = review.ticket
         review_form = ReviewForm(initial={
@@ -261,6 +297,7 @@ class ReviewEditView(LoginRequiredMixin, View):
         })
 
     def post(self, request, review_id):
+        """Traite le formulaire de modification de critique et sauvegarde les modifications."""
         review = get_object_or_404(Review, id=review_id, user=request.user)
         review_form = ReviewForm(request.POST, request.FILES)
         if review_form.is_valid():
@@ -276,7 +313,10 @@ class ReviewEditView(LoginRequiredMixin, View):
 
 
 class ReviewDeleteView(LoginRequiredMixin, View):
+    """Vue pour supprimer une critique."""
+
     def post(self, request, review_id):
+        """Supprime une critique et redirige vers la page des posts."""
         review = get_object_or_404(Review, id=review_id, user=request.user)
         review.delete()
         return redirect("posts")
