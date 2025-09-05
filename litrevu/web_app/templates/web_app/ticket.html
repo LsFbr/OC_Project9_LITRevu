@@ -9,14 +9,14 @@
             <label for="{{ form.title.id_for_label }}" class="block text-gray-700">{{ form.title.label }}</label>
             {{ form.title }}
             {% if form.title.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                <p class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ form.title.errors.0 }}</p>
             {% endif %}
         </div>
         <div class="mb-4">
             <label for="{{ form.description.id_for_label }}" class="block text-gray-700">{{ form.description.label }}</label>
             {{ form.description }}
             {% if form.description.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ form.description.errors.0 }}</p>
+                <p class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ form.description.errors.0 }}</p>
             {% endif %}
         </div>
         <div class="mb-4">
@@ -40,7 +40,7 @@
                 alt="Aperçu de l'image"
                 class="hidden w-auto max-h-48 object-cover rounded mt-3">
             {% if form.image.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ form.image.errors.0 }}</p>
+                <p class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ form.image.errors.0 }}</p>
             {% endif %}
         </div>
         <div class="flex justify-end gap-4">
