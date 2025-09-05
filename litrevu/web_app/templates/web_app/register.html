@@ -6,24 +6,30 @@
     <h2 class="text-xl font-semibold mb-6 text-center">Inscrivez-vous</h2>
     <form method="post" aria-label="Formulaire d'inscription" id="register-form">
         {% csrf_token %}
-        <div class="mb-4">
-            {% for error in form.username.errors %}
-                <p class="text-red-500">{{ error }}</p>
-            {% endfor %}
-            <label for="{{ form.username.id_for_label }}" class="sr-only">{{ form.username.label }}</label>
-            {{ form.username }}
-        </div>
-        <div class="mb-4">
-            {% for error in form.password2.errors %}
-                <p class="text-red-500">{{ error }}</p>
-            {% endfor %}
-            <label for="{{ form.password1.id_for_label }}" class="sr-only">{{ form.password1.label }}</label>
-            {{ form.password1 }}
-        </div>
-        <div class="mb-6">
-            <label for="{{ form.password2.id_for_label }}" class="sr-only">{{ form.password2.label }}</label>
+        <fieldset>
+            <legend class="sr-only">Informations d'inscription</legend>
+            <div class="mb-4">
+                <label for="{{ form.username.id_for_label }}" class="sr-only">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                    <div class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-4">
+                <label for="{{ form.password1.id_for_label }}" class="sr-only">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                {% for error in form.password1.errors %}
+                    <div class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-6">
+                <label for="{{ form.password2.id_for_label }}" class="sr-only">{{ form.password2.label }}</label>
                 {{ form.password2 }}
-        </div>
+                {% for error in form.password2.errors %}
+                    <div class="text-red-500 text-sm mt-1" role="alert" aria-live="polite">{{ error }}</div>
+                {% endfor %}
+            </div>
+        </fieldset>
         <div class="flex justify-center gap-4">
             <a href="{% url 'login' %}" class="border border-gray-800 text-gray-800 font-medium py-2 px-6 rounded hover:bg-gray-100">
                 Retourner
