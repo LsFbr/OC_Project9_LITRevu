@@ -29,12 +29,6 @@
       <div class="w-full">
         <label for="{{ follow_form.username.id_for_label }}" class="sr-only">{{ follow_form.username.label }}</label>
         {{ follow_form.username }}
-        {% if follow_form.username.errors %}
-          <p class="text-red-600 text-sm mt-1" role="alert" aria-live="polite">{{ follow_form.username.errors.0 }}</p>
-        {% endif %}
-        {% if follow_form.non_field_errors %}
-          <p class="text-red-600 text-sm mt-1" role="alert" aria-live="polite">{{ follow_form.non_field_errors.0 }}</p>
-        {% endif %}
       </div>
 
       <div class="flex items-end">
@@ -44,6 +38,12 @@
         </button>
       </div>
     </form>
+    {% if follow_form.username.errors %}
+      <p class="text-red-600 text-sm mt-1" role="alert" aria-live="polite">{{ follow_form.username.errors.0 }}</p>
+    {% endif %}
+    {% if follow_form.non_field_errors %}
+      <p class="text-red-600 text-sm mt-1" role="alert" aria-live="polite">{{ follow_form.non_field_errors.0 }}</p>
+    {% endif %}
   </div>
 
   <div class="flex flex-col gap-6">
