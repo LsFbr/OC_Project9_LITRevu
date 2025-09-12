@@ -63,11 +63,11 @@
         <div class="border p-4 bg-gray-50 rounded">
             <div class="flex justify-between items-center">
                 {% if ticket.user == user %}
-                    <p class="text-sm text-gray-500 mb-2">Votre ticket</p>
+                    <p class="text-sm text-gray-600 mb-2">Votre ticket</p>
                 {% else %}
-                    <p class="text-sm text-gray-500 mb-2">Ticket de {{ ticket.user.username }}</p>
+                    <p class="text-sm text-gray-600 mb-2">Ticket de {{ ticket.user.username }}</p>
                 {% endif %}
-                <p class="text-sm text-gray-500 mb-2">Créé le {{ ticket.time_created|date:"H:i d M Y" }}</p>
+                <p class="text-sm text-gray-600 mb-2">Créé le {{ ticket.time_created|date:"H:i d M Y" }}</p>
             </div>
             <h2 class="text-lg font-semibold text-gray-800">{{ ticket.title }}</h2>
             <p class="text-gray-700 mt-2">{{ ticket.description }}</p>
