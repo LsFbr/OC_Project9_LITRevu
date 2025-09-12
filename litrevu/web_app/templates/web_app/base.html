@@ -18,10 +18,10 @@
             </div>
             {% if user.is_authenticated %}
                 <nav class="flex justify-end items-center gap-6 text-gray-800 font-medium" role="navigation" aria-label="Navigation principale">
-                    <a href="{% url 'flux' %}" class="hover:text-blue-600 px-2 py-1">Flux</a>
-                    <a href="{% url 'posts' %}" class="hover:text-blue-600 px-2 py-1">Posts</a>
-                    <a href="{% url 'subscriptions' %}" class="hover:text-blue-600 px-2 py-1">Abonnements</a>
-                    <a href="{% url 'logout' %}" class="hover:text-red-600 px-2 py-1">Se déconnecter</a>
+                    <a href="{% url 'flux' %}" class="hover:text-blue-800 px-2 py-1">Flux</a>
+                    <a href="{% url 'posts' %}" class="hover:text-blue-800 px-2 py-1">Posts</a>
+                    <a href="{% url 'subscriptions' %}" class="hover:text-blue-800 px-2 py-1">Abonnements</a>
+                    <a href="{% url 'logout' %}" class="hover:text-red-800 px-2 py-1">Se déconnecter</a>
                 </nav>
             {% endif %}
         </div>
