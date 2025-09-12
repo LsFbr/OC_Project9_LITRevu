@@ -35,7 +35,7 @@
             <div class="mb-4">
                 <label class="block text-gray-700 mb-2">Image</label>
     
-                <input id="id_image" name="image" type="file" accept="image/*" class="sr-only">
+                <input id="id_image" name="image" type="file" accept="image/*" class="sr-only" tabindex="-1">
           
                 <label for="id_image"
                        id="btn-pick-image"
@@ -137,7 +137,7 @@
         preview.src = "";
         preview.classList.add("hidden");
         btnClear.classList.add("hidden");
-        btnPickText.textContent = "Télécharger fichier";
+        btnPickText.textContent = "Importer une image";
       }
     
       function showPreview(file) {
@@ -163,6 +163,14 @@
       btnClear?.addEventListener("click", function () {
         fileInput.value = "";
         resetPreview();
+      });
+
+      // Gérer l'activation par Entrée sur le label
+      document.getElementById("btn-pick-image").addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          fileInput.click();
+        }
       });
     });
     </script>
