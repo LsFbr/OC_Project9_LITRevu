@@ -100,6 +100,12 @@ Depuis cette interface, vous pouvez consulter, créer, modifier ou supprimer les
 # Utilisation
 
 ## Lancer l’application
+Déplacez vous dans le répertoire litrevu :
+
+```bash
+cd litrevu
+```
+Lancez l'application :
 
 ```bash
 python manage.py runserver
