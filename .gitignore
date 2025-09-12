@@ -191,6 +191,5 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# Media files uploaded by users
-media/
+
 uploads/
