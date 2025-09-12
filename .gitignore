@@ -194,4 +194,8 @@ cython_debug/
 # Media files uploaded by users
 media/
 uploads/
+# Ignore user-uploaded images but keep static app images
+!litrevu/web_app/static/web_app/images/
+# Ignore general images folder but not the specific app images folder
 images/
+!litrevu/web_app/static/web_app/images/*
