@@ -83,15 +83,15 @@ http://127.0.0.1:8000
 
 ### Identifiants de test
 
-* **Superutilisateur (accès admin)**
-  Identifiant : `admin`
-  Mot de passe : `admin`
-
-Accès : [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
-
 * **Utilisateur standard**
-  Identifiant : `SerialReader`
-  Mot de passe : `read`
+  * Identifiant : `SerialReader`
+  * Mot de passe : `read`
+
+* **Superutilisateur (accès admin)**
+  * Identifiant : `admin`
+  * Mot de passe : `admin`
+
+  Le super utilisateur permet l'accès à l'interface d'administration de l'application à l'adresse : [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
 
